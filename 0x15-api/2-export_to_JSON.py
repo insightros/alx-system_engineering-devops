@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-"exports to-do list information for a given employee ID to JSON format"
+"""Exports to-do list information for a given employee ID to JSON format."""
 import json
 import requests
 import sys
@@ -15,9 +15,11 @@ if __name__ == "__main__":
     username = user.get("username")
     todos = requests.get(url + "todos", params={"userId": user_id}).json()
 
+    tasks_list = [{
+        "task": t.get("title"),
+        "completed": t.get("completed"),
+        "username": username
+    } for t in todos]
+
     with open("{}.json".format(user_id), "w") as jsonfile:
-        json.dump({user_id: [{
-                "task": t.get("title"),
-                "completed": t.get("completed"),
-                "username": username
-            } for t in todos]}, jsonfile)
+        json.dump({str(user_id): tasks_list}, jsonfile)
