@@ -4,31 +4,13 @@ import requests
 
 
 def number_of_subscribers(subreddit):
-
-    url = f"https://api.reddit.com/r/{subreddit}/about.json"
-    headers = {"User-Agent": "your_unique_user_agent"}
-
-    try:
-        response = requests.get(url, headers=headers, allow_redirects=False)
-        response.raise_for_status()
-
-        data = response.json()
-        if data['kind'] != 't5':
-            raise ValueError("Invalid subreddit or incorrect endpoint")
-
-        return data['data']['subscribers']
-
-    except (requests.exceptions.RequestException, ValueError) as e:
-        print(f"Error retrieving subscriber count: {e}")
+    """Return the total number of subscribers on a given subreddit."""
+    url = "https://www.reddit.com/r/{}/about.json".format(subreddit)
+    headers = {
+        "User-Agent": "linux:0x16.api.advanced:v1.0.0 (by /u/bdov_)"
+    }
+    response = requests.get(url, headers=headers, allow_redirects=False)
+    if response.status_code == 404:
         return 0
-
-
-if __name__ == "__main__":
-    import sys
-
-    if len(sys.argv) < 2:
-        print("Please pass an argument for the subreddit to search.")
-    else:
-        subreddit = sys.argv[1]
-        subscribers = number_of_subscribers(subreddit)
-        print(f"Number of subscribers for r/{subreddit}: {subscribers}")
+    results = response.json().get("data")
+    return results.get("subscribers")
